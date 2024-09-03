@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-y: auto;
+        }
+        .posts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Instagram Report</h1>
+
+    <div class="section">
+        <h2>Homepage</h2>
+        <img src="instagram_homepage.png" alt="Homepage Screenshot">
+    </div>
+
+    <div class="section">
+        <h2>Profile Page</h2>
+        <img src="instagram_profile.png" alt="Profile Page Screenshot">
+    </div>
+
+    <div class="section">
+        <h2>Followers</h2>
+        <img src="instagram_followers.png" alt="Followers Screenshot">
+    </div>
+
+    <div class="section">
+        <h2>Followers List</h2>
+        <pre>{{ followers_list }}</pre>
+    </div>
+
+    <div class="section">
+        <h2>Following</h2>
+        <img src="instagram_following.png" alt="Following Screenshot">
+    </div>
+
+    <div class="section">
+        <h2>Following List</h2>
+        <pre>{{ following_list }}</pre>
+    </div>
+
+    <!-- <div class="section">
+        <h2>Posts</h2>
+        <div class="posts-container">
+            {{ posts }}
+        </div>
+    </div> -->
+
+</body>
+</html>
