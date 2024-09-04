@@ -6,6 +6,11 @@ import os
 # Import the necessary functions from the existing scripts
 from insta_scraper import InstagramScraperApp
 from google_scraper import main as google_main
+# Import the main functions for WhatsApp, Twitter, and Facebook scraping
+# Assuming these are defined in their respective scripts
+from whatsapp import main as whatsapp_main
+from twitter import main as twitter_main
+from facebook import FacebookScraperApp
 
 class RoundedButton(tk.Canvas):
     def __init__(self, parent, width, height, cornerradius, padding, color, text, command=None):
@@ -51,7 +56,7 @@ class MainApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Social Media Forensic Tool")
-        self.geometry("500x400")
+        self.geometry("600x500")
         self.configure(bg='#f0f0f0')
 
         self.custom_font = font.Font(family="Helvetica", size=12)
@@ -80,11 +85,27 @@ class MainApp(tk.Tk):
 
         # Instagram button
         self.instagram_button = RoundedButton(button_frame, 150, 40, 10, 2, '#e74c3c', "Instagram", self.start_instagram)
-        self.instagram_button.pack(side=tk.LEFT, padx=10)
+        self.instagram_button.grid(row=0, column=0, padx=20, pady=20)
 
         # Google button
         self.google_button = RoundedButton(button_frame, 150, 40, 10, 2, '#3498db', "Google", self.start_google)
-        self.google_button.pack(side=tk.LEFT, padx=10)
+        self.google_button.grid(row=0, column=1, padx=20, pady=20)
+
+        # WhatsApp button
+        self.whatsapp_button = RoundedButton(button_frame, 150, 40, 10, 2, '#1abc9c', "WhatsApp", self.start_whatsapp)
+        self.whatsapp_button.grid(row=0, column=2, padx=20, pady=20)
+
+        # Twitter button
+        self.twitter_button = RoundedButton(button_frame, 150, 40, 10, 2, '#00acee', "Twitter", self.start_twitter)
+        self.twitter_button.grid(row=1, column=0, padx=20, pady=20)
+
+        # Facebook button
+        self.facebook_button = RoundedButton(button_frame, 150, 40, 10, 2, '#3b5998', "Facebook", self.start_facebook)
+        self.facebook_button.grid(row=1, column=1, padx=20, pady=20)
+
+        # Telegram button
+        self.facebook_button = RoundedButton(button_frame, 150, 40, 10, 2, '#01acee', "Telegram", self.start_facebook)
+        self.facebook_button.grid(row=1, column=2, padx=20, pady=20)
 
         # Quit button
         self.quit_button = RoundedButton(self, 100, 40, 10, 2, '#95a5a6', "Quit", self.quit)
@@ -96,14 +117,40 @@ class MainApp(tk.Tk):
         instagram_app.mainloop()
 
     def start_google(self):
-        # Run Google scraping in a separate thread
         threading.Thread(target=self.run_google_scraper).start()
+
+    def start_whatsapp(self):
+        threading.Thread(target=self.run_whatsapp_scraper).start()
+
+    def start_twitter(self):
+        threading.Thread(target=self.run_twitter_scraper).start()
+    
+    def start_facebook(self):
+        self.destroy()  # Close the main window
+        facebook_app = FacebookScraperApp()
+        facebook_app.mainloop()
+
 
     def run_google_scraper(self):
         try:
             google_main()
+
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred during Google scraping: {str(e)}")
+
+    def run_whatsapp_scraper(self):
+        try:
+            whatsapp_main()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred during WhatsApp scraping: {str(e)}")
+
+    def run_twitter_scraper(self):
+        try:
+            twitter_main()
+            messagebox.showinfo("Success", "Twitter scraping completed successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred during Twitter scraping: {str(e)}")
 
 if __name__ == "__main__":
     app = MainApp()

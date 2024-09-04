@@ -234,7 +234,7 @@ def navigate_to_profile(driver):
     except Exception as e:
         print(f"Error navigating to profile: {str(e)}")
         print("Current URL:", driver.current_url)
-        take_screenshot(driver, "navigation_error")
+        # take_screenshot(driver, "navigation_error")
 
 
 
@@ -297,7 +297,7 @@ def extract_and_save_posts(driver):
         print(f"All posts downloaded to {folder}")
     except Exception as e:
         print(f"Error extracting posts: {str(e)}")
-        take_screenshot(driver, "post_extraction_error")
+        # take_screenshot(driver, "post_extraction_error")
 
 
 
