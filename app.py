@@ -9,7 +9,7 @@ from google_scraper import main as google_main
 # Import the main functions for WhatsApp, Twitter, and Facebook scraping
 # Assuming these are defined in their respective scripts
 from whatsapp import main as whatsapp_main
-from twitter import main as twitter_main
+from twitter import TwitterScraperApp
 from facebook import FacebookScraperApp
 
 class RoundedButton(tk.Canvas):
@@ -84,19 +84,19 @@ class MainApp(tk.Tk):
         button_frame.pack(pady=20)
 
         # Instagram button
-        self.instagram_button = RoundedButton(button_frame, 150, 40, 10, 2, '#e74c3c', "Instagram", self.start_instagram)
+        self.instagram_button = RoundedButton(button_frame, 150, 40, 10, 2, '#f56040', "Instagram", self.start_instagram)
         self.instagram_button.grid(row=0, column=0, padx=20, pady=20)
 
         # Google button
-        self.google_button = RoundedButton(button_frame, 150, 40, 10, 2, '#3498db', "Google", self.start_google)
+        self.google_button = RoundedButton(button_frame, 150, 40, 10, 2, '#34a853', "Google", self.start_google)
         self.google_button.grid(row=0, column=1, padx=20, pady=20)
 
         # WhatsApp button
-        self.whatsapp_button = RoundedButton(button_frame, 150, 40, 10, 2, '#1abc9c', "WhatsApp", self.start_whatsapp)
+        self.whatsapp_button = RoundedButton(button_frame, 150, 40, 10, 2, '#075e54', "WhatsApp", self.start_whatsapp)
         self.whatsapp_button.grid(row=0, column=2, padx=20, pady=20)
 
         # Twitter button
-        self.twitter_button = RoundedButton(button_frame, 150, 40, 10, 2, '#00acee', "Twitter", self.start_twitter)
+        self.twitter_button = RoundedButton(button_frame, 150, 40, 10, 2, '#000000', "Twitter", self.start_twitter)
         self.twitter_button.grid(row=1, column=0, padx=20, pady=20)
 
         # Facebook button
@@ -123,7 +123,9 @@ class MainApp(tk.Tk):
         threading.Thread(target=self.run_whatsapp_scraper).start()
 
     def start_twitter(self):
-        threading.Thread(target=self.run_twitter_scraper).start()
+        self.destroy()  # Close the main window
+        twitter_app = TwitterScraperApp()
+        twitter_app.mainloop()
     
     def start_facebook(self):
         self.destroy()  # Close the main window
@@ -144,13 +146,6 @@ class MainApp(tk.Tk):
             
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred during WhatsApp scraping: {str(e)}")
-
-    def run_twitter_scraper(self):
-        try:
-            twitter_main()
-            messagebox.showinfo("Success", "Twitter scraping completed successfully!")
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred during Twitter scraping: {str(e)}")
 
 if __name__ == "__main__":
     app = MainApp()
