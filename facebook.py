@@ -52,31 +52,94 @@ def close_notifications(driver):
     except Exception as e:
         print("No notifications to close or error in closing:", e)
 
+def extract_friends(driver, username):
+    report_folder = get_report_folder()
+    friends_file_path = os.path.join(report_folder, f"{username}_friends.txt")
+    
+    driver.get("https://www.facebook.com/me/friends")
+    time.sleep(5)  # Wait for the page to load
+    
+    friends = []
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    
+    while True:
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # Wait for page to load
+        
+        # Extract friends
+        friend_elements = driver.find_elements(By.XPATH, "//div[@class='x1iyjqo2 x1pi30zi']/div/a")
+        for element in friend_elements:
+            friend_name = element.text.strip()
+            if friend_name and friend_name not in friends:
+                friends.append(friend_name)
+        
+        # Check if we've reached the end of the page
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+    
+    # Save friends to file
+    with open(friends_file_path, 'w', encoding='utf-8') as f:
+        for friend in friends:
+            f.write(f"{friend}\n")
+    
+    print(f"Extracted {len(friends)} friends and saved to {friends_file_path}")
+    return friends_file_path
+
 # Function to generate a PDF report using FPDF
 def generate_pdf_report(username):
-    # Get the report folder path
     report_folder = get_report_folder()
-
     pdf = FPDF()
     pdf.add_page()
     
     # Title
-    pdf.set_font("Arial", size=16)
+    pdf.set_font("Arial", 'B', size=16)
     pdf.cell(200, 10, txt="Facebook Report", ln=True, align="C")
-    
-    # Homepage screenshot
-    pdf.set_font("Arial", size=12)
     pdf.ln(10)
-    pdf.cell(200, 10, txt="Homepage", ln=True)
+    
+    # Function to add a section with image and title
+    def add_section(title, image_path):
+        pdf.set_font("Arial", 'B', size=14)
+        pdf.cell(200, 10, txt=title, ln=True)
+        pdf.image(image_path, x=10, y=pdf.get_y(), w=190)
+        pdf.ln(140)  # Adjust this value based on your image size
+
+    # Homepage screenshot
     homepage_screenshot = os.path.join(report_folder, "facebook_homepage.png")
-    pdf.image(homepage_screenshot, x=10, y=pdf.get_y(), w=180)
-    
+    add_section("Homepage", homepage_screenshot)
+
     # Profile screenshot
-    pdf.add_page()
-    pdf.cell(200, 10, txt="Profile", ln=True)
     profile_screenshot = os.path.join(report_folder, "facebook_profile.png")
-    pdf.image(profile_screenshot, x=10, y=pdf.get_y(), w=180)
-    
+    add_section("Profile", profile_screenshot)
+
+    # Friends List
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', size=14)
+    pdf.cell(200, 10, txt="Friends List", ln=True)
+    pdf.ln(5)
+
+    friends_file_path = os.path.join(report_folder, f"{username}_friends.txt")
+    if os.path.exists(friends_file_path):
+        pdf.set_font("Arial", size=10)
+        with open(friends_file_path, 'r', encoding='utf-8') as f:
+            friends = f.readlines()
+        
+        # Calculate the number of columns based on the page width
+        col_width = 60
+        num_cols = 3
+        
+        for i, friend in enumerate(friends):
+            if i % num_cols == 0 and i != 0:
+                pdf.ln()
+            pdf.cell(col_width, 10, txt=friend.strip()[:30], border=1)  # Limit name length to 30 characters
+        
+        pdf.ln(10)
+        pdf.cell(200, 10, txt=f"Total Friends: {len(friends)}", ln=True)
+    else:
+        pdf.cell(200, 10, txt="Friends list not available", ln=True)
+
     # Save the PDF
     pdf_output_path = os.path.join(report_folder, f"{username}_facebook_report.pdf")
     pdf.output(pdf_output_path)
@@ -167,6 +230,7 @@ class FacebookScraperApp(tk.Tk):
         self.quit_button = RoundedButton(self, 100, 40, 10, 2, '#e74c3c', "Quit", self.quit)
         self.quit_button.pack(side=tk.BOTTOM, pady=20)
 
+
     def start_scraper(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -217,6 +281,9 @@ def main(e_mail, pass_word):
     driver.get("https://www.facebook.com/me")
     time.sleep(3)
     take_screenshot(driver, "profile")
+
+    # Extract friends list
+    extract_friends(driver, username)
 
     # Generate PDF report
     generate_pdf_report(username)
